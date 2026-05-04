@@ -485,15 +485,15 @@
       // 공휴일 빨간색
       if (isRedDay(ymd)) cell.classList.add("day-holiday");
 
-      // 공휴일 이름 라벨 (일요일 제외)
+      // 공휴일 이름 라벨 (일요일 제외) — 날짜 숫자 바로 아래에 삽입
       const holidayName = KOREAN_HOLIDAYS[ymd];
       if (holidayName && dayOfWeek(ymd) !== 0) {
-        const frame = cell.querySelector(".fc-daygrid-day-frame");
-        if (frame) {
+        const top = cell.querySelector(".fc-daygrid-day-top");
+        if (top && top.parentNode) {
           const label = document.createElement("div");
           label.className = "holiday-label";
           label.textContent = holidayName;
-          frame.appendChild(label);
+          top.parentNode.insertBefore(label, top.nextSibling);
         }
       }
 

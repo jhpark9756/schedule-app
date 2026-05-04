@@ -5,9 +5,37 @@
   let currentGroupMeta = null;
   let groupEventsRef = null;
   let events = {};
+  let unavailableDatesSet = new Set();
   let editingEventId = null;
   let editingGroupId = null;
   let isAdmin = false;
+
+  const DEFAULT_TITLE = "청모 일정 취합";
+
+  // 한국 공휴일 (양력 고정 + 음력 환산 일부). 새 해 추가 시 여기에.
+  const KOREAN_HOLIDAYS = new Set([
+    // 2026
+    "2026-01-01", // 신정
+    "2026-02-16", "2026-02-17", "2026-02-18", // 설날 연휴
+    "2026-03-01", // 삼일절 (일요일)
+    "2026-05-05", // 어린이날
+    "2026-05-24", // 부처님오신날 (일요일)
+    "2026-06-06", // 현충일 (토요일)
+    "2026-08-15", // 광복절 (토요일)
+    "2026-09-24", "2026-09-25", "2026-09-26", // 추석 연휴
+    "2026-10-03", // 개천절 (토요일)
+    "2026-10-09", // 한글날
+    "2026-12-25", // 크리스마스
+    // 2027 (양력 고정만)
+    "2027-01-01",
+    "2027-03-01",
+    "2027-05-05",
+    "2027-06-06",
+    "2027-08-15",
+    "2027-10-03",
+    "2027-10-09",
+    "2027-12-25",
+  ]);
 
   function init() {
     if (!validateConfig()) return;
@@ -52,6 +80,7 @@
   }
 
   function route() {
+    document.title = DEFAULT_TITLE;
     const params = new URLSearchParams(location.search);
     const groupId = params.get("g");
     if (groupId) {
@@ -93,9 +122,7 @@
       navigate(location.pathname);
     });
 
-    document.getElementById("create-group-btn").addEventListener("click", () => {
-      openGroupModal();
-    });
+    document.getElementById("create-group-btn").addEventListener("click", () => openGroupModal());
     document.getElementById("edit-group-btn").addEventListener("click", () => {
       if (!isAdmin || !currentGroupId) return;
       openGroupModal(currentGroupMeta, currentGroupId);
@@ -155,7 +182,9 @@
       fixedWeekCount: false,
       dayMaxEvents: 4,
       moreLinkText: (n) => `+${n}개 더보기`,
-      noEventsText: "등록된 일정이 없습니다.",
+      noEventsText: "등록된 불가 일정이 없습니다.",
+      longPressDelay: 250,
+      selectLongPressDelay: 250,
       select: (info) => {
         const startYMD = dateToYMD(info.start);
         const endDate = new Date(info.end);
@@ -168,8 +197,6 @@
         const ymd = dateToYMD(info.date);
         openEventModal({ start: ymd, end: ymd });
       },
-      longPressDelay: 250,
-      selectLongPressDelay: 250,
       eventClick: (info) => {
         const ev = events[info.event.id];
         if (ev) openEventModal(ev, info.event.id);
@@ -177,6 +204,9 @@
       eventDidMount: (info) => {
         const memo = info.event.extendedProps.memo;
         if (memo) info.el.title = memo;
+      },
+      datesSet: () => {
+        refreshDayHighlights();
       },
       windowResize: () => {
         calendar.setOption("headerToolbar", getHeaderToolbar());
@@ -228,7 +258,7 @@
       .catch((err) => alert("목록을 불러오지 못했습니다: " + err.message));
   }
 
-  // ----- Group modal (create + edit) -----
+  // ----- Group modal -----
 
   function openGroupModal(meta, groupId) {
     editingGroupId = groupId || null;
@@ -308,6 +338,7 @@
       groupEventsRef = null;
     }
     events = {};
+    unavailableDatesSet = new Set();
     calendar.removeAllEvents();
 
     currentGroupId = groupId;
@@ -322,7 +353,9 @@
       .then((snap) => {
         const meta = snap.val() || {};
         currentGroupMeta = meta;
-        document.getElementById("group-name").textContent = meta.name || "(알 수 없는 모임)";
+        const name = meta.name || "(알 수 없는 모임)";
+        document.getElementById("group-name").textContent = name;
+        document.title = `${name} ${DEFAULT_TITLE}`;
         applyGroupRange(meta);
       })
       .catch(() => {
@@ -358,9 +391,11 @@
       calendar.setOption("validRange", null);
       calendar.gotoDate(new Date());
     }
+    refreshDayHighlights();
   }
 
   function refreshCalendar() {
+    unavailableDatesSet = computeUnavailable(events);
     calendar.removeAllEvents();
     Object.entries(events).forEach(([id, ev]) => {
       if (!ev || !ev.start || !ev.end) return;
@@ -379,12 +414,60 @@
         extendedProps: { memo: ev.memo, author: ev.author },
       });
     });
+    refreshDayHighlights();
+  }
+
+  function computeUnavailable(eventMap) {
+    const set = new Set();
+    Object.values(eventMap || {}).forEach((ev) => {
+      if (!ev || !ev.start || !ev.end) return;
+      const startStr = dateToYMD(ev.start);
+      const endStr = dateToYMD(ev.end);
+      if (!startStr || !endStr) return;
+      let d = startStr;
+      while (d <= endStr) {
+        set.add(d);
+        d = addDays(d, 1);
+      }
+    });
+    return set;
+  }
+
+  function isHoliday(ymd) {
+    const [y, m, d] = ymd.split("-").map(Number);
+    const dt = new Date(y, m - 1, d);
+    const day = dt.getDay();
+    if (day === 0 || day === 6) return true;
+    return KOREAN_HOLIDAYS.has(ymd);
+  }
+
+  function isNextDayHoliday(ymd) {
+    return isHoliday(addDays(ymd, 1));
+  }
+
+  function isInGroupRange(ymd) {
+    const meta = currentGroupMeta;
+    if (!meta || !meta.startDate || !meta.endDate) return false;
+    return ymd >= meta.startDate && ymd <= meta.endDate;
+  }
+
+  function refreshDayHighlights() {
+    const cells = document.querySelectorAll(".fc-daygrid-day[data-date], .fc-day[data-date]");
+    cells.forEach((cell) => {
+      cell.classList.remove("day-available", "day-priority");
+      const ymd = cell.getAttribute("data-date");
+      if (!ymd) return;
+      if (!isInGroupRange(ymd)) return;
+      if (unavailableDatesSet.has(ymd)) return;
+      cell.classList.add("day-available");
+      if (isNextDayHoliday(ymd)) cell.classList.add("day-priority");
+    });
   }
 
   function openEventModal(data, id) {
     if (!currentGroupId) return;
     editingEventId = id || null;
-    document.getElementById("event-modal-title").textContent = id ? "일정 수정" : "일정 등록";
+    document.getElementById("event-modal-title").textContent = id ? "불가 일정 수정" : "불가 일정 등록";
     document.getElementById("event-title").value = data.title || "";
     document.getElementById("event-author").value =
       data.author || localStorage.getItem("lastAuthor") || "";
@@ -440,7 +523,7 @@
     const meta = currentGroupMeta || {};
     if (meta.startDate && meta.endDate) {
       if (startStr < meta.startDate || endStr > meta.endDate) {
-        alert(`이 모임은 ${meta.startDate} ~ ${meta.endDate} 기간만 일정 등록 가능합니다.`);
+        alert(`이 모임은 ${meta.startDate} ~ ${meta.endDate} 기간만 등록 가능합니다.`);
         return;
       }
     }

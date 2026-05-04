@@ -516,3 +516,51 @@ button.ghost:hover { background: rgba(255, 255, 255, 0.28); }
   }
   .fc .fc-toolbar-chunk { display: flex; justify-content: center; }
 }
+
+/* ---------- Available date highlights ---------- */
+
+.fc .fc-daygrid-day.day-available {
+  background: #fef9c3 !important;
+}
+.fc .fc-daygrid-day.day-priority {
+  background: #fde68a !important;
+}
+.fc .fc-daygrid-day.day-priority .fc-daygrid-day-top::before {
+  content: "★";
+  color: #b45309;
+  font-size: 12px;
+  margin-right: 2px;
+  align-self: center;
+}
+.fc .fc-daygrid-day.day-priority .fc-daygrid-day-number {
+  color: #78350f;
+  font-weight: 700;
+}
+
+/* Today highlight always wins over yellow */
+.fc .fc-day-today,
+.fc .fc-day-today.day-available,
+.fc .fc-day-today.day-priority {
+  background: var(--primary-soft) !important;
+}
+.fc .fc-day-today.day-priority {
+  box-shadow: inset 0 -3px 0 #f59e0b;
+}
+.fc .fc-day-today.day-priority .fc-daygrid-day-number {
+  color: var(--primary);
+}
+.fc .fc-day-today.day-priority .fc-daygrid-day-top::before {
+  color: #b45309;
+}
+
+/* Hint inline tags */
+.hint-tag {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  margin: 0 1px;
+}
+.hint-tag-available { background: #fef9c3; color: #713f12; }
+.hint-tag-priority { background: #fde68a; color: #78350f; }

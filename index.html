@@ -3,7 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>모임 일정 취합</title>
+  <title>청모 일정 취합</title>
+  <meta property="og:title" content="청모 일정 취합">
+  <meta property="og:description" content="모임 일정을 취합하고 모두가 가능한 날짜를 찾아보세요.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary">
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
@@ -52,7 +56,7 @@
         </div>
       </div>
       <div id="hint">
-        캘린더에서 날짜를 클릭하거나 드래그(여러 날)하면 일정 등록 창이 열립니다. 등록된 일정을 클릭하면 수정/삭제할 수 있습니다.
+        본인이 <b>참석 불가한 날짜</b>를 등록해주세요. 모두가 가능한 날짜는 <span class="hint-tag hint-tag-available">노란색</span>으로, 다음날이 휴일인 추천 날짜는 <span class="hint-tag hint-tag-priority">★ 진한 노랑</span>으로 표시됩니다. 날짜 클릭 또는 드래그(여러 날)로 등록.
       </div>
       <div id="calendar"></div>
     </div>
@@ -60,12 +64,12 @@
 
   <div id="event-modal" class="modal hidden">
     <div class="modal-content">
-      <h2 id="event-modal-title">일정 등록</h2>
+      <h2 id="event-modal-title">불가 일정 등록</h2>
       <form id="event-form">
-        <label>제목 <input type="text" id="event-title" required maxlength="80"></label>
+        <label>제목 <input type="text" id="event-title" required maxlength="80" placeholder="예: 가족 여행"></label>
         <label>등록자 <input type="text" id="event-author" required maxlength="30"></label>
-        <label>시작일 <input type="date" id="event-start" required></label>
-        <label>종료일 <input type="date" id="event-end" required></label>
+        <label>불가 시작일 <input type="date" id="event-start" required></label>
+        <label>불가 종료일 <input type="date" id="event-end" required></label>
         <label>메모 <textarea id="event-memo" maxlength="500"></textarea></label>
         <div class="modal-buttons">
           <button type="button" id="event-delete-btn" class="danger hidden">삭제</button>

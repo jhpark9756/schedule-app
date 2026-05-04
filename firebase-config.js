@@ -17,4 +17,4 @@ window.firebaseConfig = {
 //   첫 방문 시 https://<배포주소>/?admin=여기에설정한키 로 한 번 접속하면
 //   해당 브라우저는 이후 관리자 모드로 동작합니다 (localStorage 저장).
 // 주의: GitHub 저장소가 public이면 이 값은 공개됩니다. 다른 곳에서 쓰지 않는 고유한 값으로 설정하세요.
-window.ADMIN_KEY = "change_this_to_your_secret_key";
+window.ADMIN_KEY = "jhpark_hslee_0912";

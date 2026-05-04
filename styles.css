@@ -517,11 +517,8 @@ button.ghost:hover { background: rgba(255, 255, 255, 0.28); }
   .fc .fc-toolbar-chunk { display: flex; justify-content: center; }
 }
 
-/* ---------- Available date highlights ---------- */
+/* ---------- Recommended date highlight (everyone available + next day is holiday/weekend) ---------- */
 
-.fc .fc-daygrid-day.day-available {
-  background: #fef9c3 !important;
-}
 .fc .fc-daygrid-day.day-priority {
   background: #fde68a !important;
 }
@@ -539,7 +536,6 @@ button.ghost:hover { background: rgba(255, 255, 255, 0.28); }
 
 /* Today highlight always wins over yellow */
 .fc .fc-day-today,
-.fc .fc-day-today.day-available,
 .fc .fc-day-today.day-priority {
   background: var(--primary-soft) !important;
 }
@@ -553,7 +549,7 @@ button.ghost:hover { background: rgba(255, 255, 255, 0.28); }
   color: #b45309;
 }
 
-/* Hint inline tags */
+/* Hint inline tag */
 .hint-tag {
   display: inline-block;
   padding: 1px 7px;
@@ -562,5 +558,4 @@ button.ghost:hover { background: rgba(255, 255, 255, 0.28); }
   font-weight: 600;
   margin: 0 1px;
 }
-.hint-tag-available { background: #fef9c3; color: #713f12; }
 .hint-tag-priority { background: #fde68a; color: #78350f; }

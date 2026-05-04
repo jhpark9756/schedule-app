@@ -12,21 +12,25 @@
 
   const DEFAULT_TITLE = "청모 일정 취합";
 
-  // 한국 공휴일 (양력 고정 + 음력 환산 일부). 새 해 추가 시 여기에.
+  // 한국 공휴일. 대체공휴일 포함. 새 해 추가 시 아래에 추가.
   const KOREAN_HOLIDAYS = new Set([
     // 2026
-    "2026-01-01", // 신정
+    "2026-01-01", // 신정 (목)
     "2026-02-16", "2026-02-17", "2026-02-18", // 설날 연휴
-    "2026-03-01", // 삼일절 (일요일)
-    "2026-05-05", // 어린이날
-    "2026-05-24", // 부처님오신날 (일요일)
-    "2026-06-06", // 현충일 (토요일)
-    "2026-08-15", // 광복절 (토요일)
+    "2026-03-01", // 삼일절 (일)
+    "2026-03-02", // 삼일절 대체 (월)
+    "2026-05-05", // 어린이날 (화)
+    "2026-05-24", // 부처님오신날 (일)
+    "2026-05-25", // 부처님오신날 대체 (월)
+    "2026-06-06", // 현충일 (토)
+    "2026-08-15", // 광복절 (토)
+    "2026-08-17", // 광복절 대체 (월)
     "2026-09-24", "2026-09-25", "2026-09-26", // 추석 연휴
-    "2026-10-03", // 개천절 (토요일)
-    "2026-10-09", // 한글날
-    "2026-12-25", // 크리스마스
-    // 2027 (양력 고정만)
+    "2026-10-03", // 개천절 (토)
+    "2026-10-05", // 개천절 대체 (월)
+    "2026-10-09", // 한글날 (금)
+    "2026-12-25", // 크리스마스 (금)
+    // 2027 — 양력 고정 휴일 (음력 휴일은 확인 후 추가 필요)
     "2027-01-01",
     "2027-03-01",
     "2027-05-05",
@@ -454,13 +458,13 @@
   function refreshDayHighlights() {
     const cells = document.querySelectorAll(".fc-daygrid-day[data-date], .fc-day[data-date]");
     cells.forEach((cell) => {
-      cell.classList.remove("day-available", "day-priority");
+      cell.classList.remove("day-priority");
       const ymd = cell.getAttribute("data-date");
       if (!ymd) return;
       if (!isInGroupRange(ymd)) return;
       if (unavailableDatesSet.has(ymd)) return;
-      cell.classList.add("day-available");
-      if (isNextDayHoliday(ymd)) cell.classList.add("day-priority");
+      if (!isNextDayHoliday(ymd)) return;
+      cell.classList.add("day-priority");
     });
   }
 

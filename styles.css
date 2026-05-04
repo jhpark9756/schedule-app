@@ -504,6 +504,12 @@ button.ghost:hover { background: rgba(255, 255, 255, 0.28); }
     padding: 1px 5px !important;
     margin: 1px 2px !important;
   }
+  .holiday-label {
+    font-size: 9px;
+    top: 2px;
+    left: 3px;
+    max-width: calc(100% - 22px);
+  }
 
   .modal { padding: 12px; align-items: flex-end; }
   .modal-content {
@@ -522,6 +528,33 @@ button.ghost:hover { background: rgba(255, 255, 255, 0.28); }
     align-items: stretch;
   }
   .fc .fc-toolbar-chunk { display: flex; justify-content: center; }
+}
+
+/* ---------- Holiday: red date number + name label (excl. Sunday for label) ---------- */
+
+.fc .fc-daygrid-day-frame { position: relative; }
+
+.fc .fc-day-sun .fc-daygrid-day-number,
+.fc .fc-daygrid-day.day-holiday .fc-daygrid-day-number {
+  color: #dc2626 !important;
+}
+.fc .fc-day-today.day-holiday .fc-daygrid-day-number {
+  color: var(--primary) !important;
+}
+
+.holiday-label {
+  position: absolute;
+  top: 4px;
+  left: 5px;
+  font-size: 10px;
+  color: #dc2626;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: calc(100% - 32px);
+  pointer-events: none;
+  letter-spacing: -0.02em;
 }
 
 /* ---------- Recommended date highlight (everyone available + next day is holiday/weekend) ---------- */

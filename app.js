@@ -12,42 +12,42 @@
 
   const DEFAULT_TITLE = "청모 일정 취합";
 
-  // 한국 공휴일 + 임시공휴일(선거일 등) + 대체공휴일.
+  // 한국 공휴일 + 임시공휴일(선거일 등) + 대체공휴일. (이름 → 캘린더에 라벨 표시)
   // 새 해/새 선거 추가 시 아래에 직접 추가하면 다음날 ★ 추천이 자동으로 따라옵니다.
-  const KOREAN_HOLIDAYS = new Set([
+  const KOREAN_HOLIDAYS = {
     // ===== 2026 =====
-    "2026-01-01", // 신정 (목)
-    "2026-02-16", "2026-02-17", "2026-02-18", // 설날 연휴
-    "2026-03-01", // 삼일절 (일)
-    "2026-03-02", // 삼일절 대체 (월)
-    "2026-05-05", // 어린이날 (화)
-    "2026-05-24", // 부처님오신날 (일)
-    "2026-05-25", // 부처님오신날 대체 (월)
-    "2026-06-03", // 제9회 전국동시지방선거 (수)
-    "2026-06-06", // 현충일 (토)
-    "2026-07-17", // 제헌절 (금)
-    "2026-08-15", // 광복절 (토)
-    "2026-08-17", // 광복절 대체 (월)
-    "2026-09-24", "2026-09-25", "2026-09-26", // 추석 연휴
-    "2026-10-03", // 개천절 (토)
-    "2026-10-05", // 개천절 대체 (월)
-    "2026-10-09", // 한글날 (금)
-    "2026-12-25", // 크리스마스 (금)
+    "2026-01-01": "신정",
+    "2026-02-16": "설날", "2026-02-17": "설날", "2026-02-18": "설날",
+    "2026-03-01": "삼일절",
+    "2026-03-02": "대체공휴일",
+    "2026-05-05": "어린이날",
+    "2026-05-24": "부처님오신날",
+    "2026-05-25": "대체공휴일",
+    "2026-06-03": "지방선거",
+    "2026-06-06": "현충일",
+    "2026-07-17": "제헌절",
+    "2026-08-15": "광복절",
+    "2026-08-17": "대체공휴일",
+    "2026-09-24": "추석", "2026-09-25": "추석", "2026-09-26": "추석",
+    "2026-10-03": "개천절",
+    "2026-10-05": "대체공휴일",
+    "2026-10-09": "한글날",
+    "2026-12-25": "크리스마스",
     // ===== 2027 (양력 고정 + 제헌절. 음력 휴일은 확정 후 추가 필요) =====
-    "2027-01-01", // 신정 (금)
-    "2027-03-01", // 삼일절 (월)
-    "2027-05-05", // 어린이날 (수)
-    "2027-06-06", // 현충일 (일)
-    "2027-07-17", // 제헌절 (토)
-    "2027-08-15", // 광복절 (일)
-    "2027-08-16", // 광복절 대체 (월)
-    "2027-10-03", // 개천절 (일)
-    "2027-10-04", // 개천절 대체 (월)
-    "2027-10-09", // 한글날 (토)
-    "2027-10-11", // 한글날 대체 (월)
-    "2027-12-25", // 크리스마스 (토)
-    "2027-12-27", // 크리스마스 대체 (월)
-  ]);
+    "2027-01-01": "신정",
+    "2027-03-01": "삼일절",
+    "2027-05-05": "어린이날",
+    "2027-06-06": "현충일",
+    "2027-07-17": "제헌절",
+    "2027-08-15": "광복절",
+    "2027-08-16": "대체공휴일",
+    "2027-10-03": "개천절",
+    "2027-10-04": "대체공휴일",
+    "2027-10-09": "한글날",
+    "2027-10-11": "대체공휴일",
+    "2027-12-25": "크리스마스",
+    "2027-12-27": "대체공휴일",
+  };
 
   function init() {
     if (!validateConfig()) return;
@@ -445,16 +445,25 @@
     return set;
   }
 
-  function isHoliday(ymd) {
+  function dayOfWeek(ymd) {
     const [y, m, d] = ymd.split("-").map(Number);
-    const dt = new Date(y, m - 1, d);
-    const day = dt.getDay();
-    if (day === 0 || day === 6) return true;
-    return KOREAN_HOLIDAYS.has(ymd);
+    return new Date(y, m - 1, d).getDay();
   }
 
-  function isNextDayHoliday(ymd) {
-    return isHoliday(addDays(ymd, 1));
+  // 휴식일: 토/일/공휴일 (★ 추천 다음날 판단용)
+  function isRestDay(ymd) {
+    const day = dayOfWeek(ymd);
+    if (day === 0 || day === 6) return true;
+    return ymd in KOREAN_HOLIDAYS;
+  }
+
+  function isNextDayRestDay(ymd) {
+    return isRestDay(addDays(ymd, 1));
+  }
+
+  // 빨간색 표시: 일요일 + 공휴일 (토요일은 제외)
+  function isRedDay(ymd) {
+    return dayOfWeek(ymd) === 0 || ymd in KOREAN_HOLIDAYS;
   }
 
   function isInGroupRange(ymd) {
@@ -466,12 +475,32 @@
   function refreshDayHighlights() {
     const cells = document.querySelectorAll(".fc-daygrid-day[data-date], .fc-day[data-date]");
     cells.forEach((cell) => {
-      cell.classList.remove("day-priority");
+      cell.classList.remove("day-priority", "day-holiday");
+      const oldLabel = cell.querySelector(".holiday-label");
+      if (oldLabel) oldLabel.remove();
+
       const ymd = cell.getAttribute("data-date");
       if (!ymd) return;
+
+      // 공휴일 빨간색
+      if (isRedDay(ymd)) cell.classList.add("day-holiday");
+
+      // 공휴일 이름 라벨 (일요일 제외)
+      const holidayName = KOREAN_HOLIDAYS[ymd];
+      if (holidayName && dayOfWeek(ymd) !== 0) {
+        const frame = cell.querySelector(".fc-daygrid-day-frame");
+        if (frame) {
+          const label = document.createElement("div");
+          label.className = "holiday-label";
+          label.textContent = holidayName;
+          frame.appendChild(label);
+        }
+      }
+
+      // ★ 추천 (모임 기간 안 + 모두 가능 + 다음날 휴식일)
       if (!isInGroupRange(ymd)) return;
       if (unavailableDatesSet.has(ymd)) return;
-      if (!isNextDayHoliday(ymd)) return;
+      if (!isNextDayRestDay(ymd)) return;
       cell.classList.add("day-priority");
     });
   }

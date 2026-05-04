@@ -164,6 +164,12 @@
         openEventModal({ start: startYMD, end: endYMD });
         calendar.unselect();
       },
+      dateClick: (info) => {
+        const ymd = dateToYMD(info.date);
+        openEventModal({ start: ymd, end: ymd });
+      },
+      longPressDelay: 250,
+      selectLongPressDelay: 250,
       eventClick: (info) => {
         const ev = events[info.event.id];
         if (ev) openEventModal(ev, info.event.id);

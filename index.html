@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>모임 일정 취합</title>
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/locales/ko.global.min.js"></script>
@@ -39,15 +40,19 @@
 
     <div id="view-calendar" class="view hidden">
       <div class="calendar-toolbar">
-        <h2 id="group-name"></h2>
+        <div class="calendar-title-block">
+          <h2 id="group-name"></h2>
+          <div id="group-range" class="group-range hidden"></div>
+        </div>
         <div class="calendar-actions">
-          <button id="back-list-btn" type="button" class="ghost hidden">← 목록으로</button>
-          <button id="copy-link-btn" type="button" class="ghost">공유 링크 복사</button>
+          <button id="back-list-btn" type="button" class="hidden">← 목록으로</button>
+          <button id="copy-link-btn" type="button">공유 링크 복사</button>
+          <button id="edit-group-btn" type="button" class="hidden">모임 정보</button>
           <button id="delete-group-btn" type="button" class="danger hidden">모임 삭제</button>
         </div>
       </div>
       <div id="hint">
-        캘린더에서 날짜/시간을 드래그하면 일정 등록 창이 열립니다. 등록된 일정을 클릭하면 수정/삭제할 수 있습니다.
+        캘린더에서 날짜를 클릭하거나 드래그(여러 날)하면 일정 등록 창이 열립니다. 등록된 일정을 클릭하면 수정/삭제할 수 있습니다.
       </div>
       <div id="calendar"></div>
     </div>
@@ -59,8 +64,8 @@
       <form id="event-form">
         <label>제목 <input type="text" id="event-title" required maxlength="80"></label>
         <label>등록자 <input type="text" id="event-author" required maxlength="30"></label>
-        <label>시작 <input type="datetime-local" id="event-start" required></label>
-        <label>종료 <input type="datetime-local" id="event-end" required></label>
+        <label>시작일 <input type="date" id="event-start" required></label>
+        <label>종료일 <input type="date" id="event-end" required></label>
         <label>메모 <textarea id="event-memo" maxlength="500"></textarea></label>
         <div class="modal-buttons">
           <button type="button" id="event-delete-btn" class="danger hidden">삭제</button>
@@ -73,14 +78,23 @@
 
   <div id="group-modal" class="modal hidden">
     <div class="modal-content">
-      <h2>새 모임 만들기</h2>
+      <h2 id="group-modal-title">새 모임 만들기</h2>
       <form id="group-form">
         <label>모임 이름
           <input type="text" id="group-name-input" required maxlength="50" placeholder="예: 동아리 MT">
         </label>
+        <div class="range-row">
+          <label>시작일 (선택)
+            <input type="date" id="group-start-input">
+          </label>
+          <label>종료일 (선택)
+            <input type="date" id="group-end-input">
+          </label>
+        </div>
+        <p class="field-hint">기간을 비워두면 모든 날짜에 일정 등록 가능. 입력하면 그 기간만 캘린더에 노출되고 등록 가능합니다.</p>
         <div class="modal-buttons">
           <button type="button" id="group-cancel-btn" class="cancel">취소</button>
-          <button type="submit" class="primary">만들기</button>
+          <button type="submit" id="group-save-btn" class="primary">만들기</button>
         </div>
       </form>
     </div>

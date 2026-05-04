@@ -12,9 +12,10 @@
 
   const DEFAULT_TITLE = "청모 일정 취합";
 
-  // 한국 공휴일. 대체공휴일 포함. 새 해 추가 시 아래에 추가.
+  // 한국 공휴일 + 임시공휴일(선거일 등) + 대체공휴일.
+  // 새 해/새 선거 추가 시 아래에 직접 추가하면 다음날 ★ 추천이 자동으로 따라옵니다.
   const KOREAN_HOLIDAYS = new Set([
-    // 2026
+    // ===== 2026 =====
     "2026-01-01", // 신정 (목)
     "2026-02-16", "2026-02-17", "2026-02-18", // 설날 연휴
     "2026-03-01", // 삼일절 (일)
@@ -22,7 +23,9 @@
     "2026-05-05", // 어린이날 (화)
     "2026-05-24", // 부처님오신날 (일)
     "2026-05-25", // 부처님오신날 대체 (월)
+    "2026-06-03", // 제9회 전국동시지방선거 (수)
     "2026-06-06", // 현충일 (토)
+    "2026-07-17", // 제헌절 (금)
     "2026-08-15", // 광복절 (토)
     "2026-08-17", // 광복절 대체 (월)
     "2026-09-24", "2026-09-25", "2026-09-26", // 추석 연휴
@@ -30,15 +33,20 @@
     "2026-10-05", // 개천절 대체 (월)
     "2026-10-09", // 한글날 (금)
     "2026-12-25", // 크리스마스 (금)
-    // 2027 — 양력 고정 휴일 (음력 휴일은 확인 후 추가 필요)
-    "2027-01-01",
-    "2027-03-01",
-    "2027-05-05",
-    "2027-06-06",
-    "2027-08-15",
-    "2027-10-03",
-    "2027-10-09",
-    "2027-12-25",
+    // ===== 2027 (양력 고정 + 제헌절. 음력 휴일은 확정 후 추가 필요) =====
+    "2027-01-01", // 신정 (금)
+    "2027-03-01", // 삼일절 (월)
+    "2027-05-05", // 어린이날 (수)
+    "2027-06-06", // 현충일 (일)
+    "2027-07-17", // 제헌절 (토)
+    "2027-08-15", // 광복절 (일)
+    "2027-08-16", // 광복절 대체 (월)
+    "2027-10-03", // 개천절 (일)
+    "2027-10-04", // 개천절 대체 (월)
+    "2027-10-09", // 한글날 (토)
+    "2027-10-11", // 한글날 대체 (월)
+    "2027-12-25", // 크리스마스 (토)
+    "2027-12-27", // 크리스마스 대체 (월)
   ]);
 
   function init() {
@@ -471,14 +479,27 @@
   function openEventModal(data, id) {
     if (!currentGroupId) return;
     editingEventId = id || null;
-    document.getElementById("event-modal-title").textContent = id ? "불가 일정 수정" : "불가 일정 등록";
+
+    const myName = localStorage.getItem("lastAuthor") || "";
+    const isExisting = !!id;
+    const isMine = !isExisting || (!!myName && data.author === myName);
+    const canDelete = isExisting && (isAdmin || isMine);
+    const authorLocked = isExisting && !isMine && !isAdmin;
+
+    document.getElementById("event-modal-title").textContent = isExisting ? "불가 일정 수정" : "불가 일정 등록";
     document.getElementById("event-title").value = data.title || "";
-    document.getElementById("event-author").value =
-      data.author || localStorage.getItem("lastAuthor") || "";
+
+    const authorEl = document.getElementById("event-author");
+    authorEl.value = data.author || myName || "";
+    authorEl.readOnly = authorLocked;
+    authorEl.classList.toggle("readonly", authorLocked);
+
     document.getElementById("event-start").value = data.start ? dateToYMD(data.start) : "";
     document.getElementById("event-end").value = data.end ? dateToYMD(data.end) : "";
     document.getElementById("event-memo").value = data.memo || "";
-    document.getElementById("event-delete-btn").classList.toggle("hidden", !id);
+    document.getElementById("event-delete-btn").classList.toggle("hidden", !canDelete);
+    document.getElementById("event-other-hint").classList.toggle("hidden", !authorLocked);
+
     applyEventInputBounds();
     document.getElementById("event-modal").classList.remove("hidden");
     setTimeout(() => document.getElementById("event-title").focus(), 50);
@@ -532,6 +553,15 @@
       }
     }
 
+    if (editingEventId) {
+      const orig = events[editingEventId];
+      const myName = localStorage.getItem("lastAuthor") || "";
+      if (orig && !isAdmin && (!myName || orig.author !== myName) && orig.author !== author) {
+        alert("다른 분이 등록한 일정의 등록자명은 변경할 수 없습니다.");
+        return;
+      }
+    }
+
     const event = {
       title,
       author,
@@ -551,6 +581,12 @@
 
   function deleteEvent() {
     if (!editingEventId) return;
+    const ev = events[editingEventId];
+    const myName = localStorage.getItem("lastAuthor") || "";
+    if (ev && !isAdmin && (!myName || ev.author !== myName)) {
+      alert("다른 분이 등록한 일정은 삭제할 수 없습니다.");
+      return;
+    }
     if (!confirm("이 일정을 삭제할까요?")) return;
     groupEventsRef
       .child(editingEventId)

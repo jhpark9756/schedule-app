@@ -399,6 +399,13 @@ main {
 }
 .modal-content textarea { min-height: 64px; resize: vertical; }
 
+.modal-content input.readonly,
+.modal-content input[readonly] {
+  background: #f3f4f6;
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
 .modal-buttons {
   display: flex;
   gap: 8px;

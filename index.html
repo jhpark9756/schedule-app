@@ -68,6 +68,7 @@
       <form id="event-form">
         <label>제목 <input type="text" id="event-title" required maxlength="80" placeholder="예: 가족 여행"></label>
         <label>등록자 <input type="text" id="event-author" required maxlength="30"></label>
+        <p id="event-other-hint" class="field-hint hidden">다른 분이 등록한 일정입니다. 등록자명과 삭제는 불가하지만 제목·날짜·메모는 수정할 수 있습니다.</p>
         <label>불가 시작일 <input type="date" id="event-start" required></label>
         <label>불가 종료일 <input type="date" id="event-end" required></label>
         <label>메모 <textarea id="event-memo" maxlength="500"></textarea></label>

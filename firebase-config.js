@@ -5,7 +5,7 @@
 // 4) 표시되는 firebaseConfig 객체의 값들을 그대로 복사해서 아래에 붙여넣기
 
 // Import the functions you need from the SDKs you need
-//import { initializeApp } from "firebase/app";
+import { initializeApp } from "firebase/app";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 

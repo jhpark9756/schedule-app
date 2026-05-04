@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>모임 일정 취합</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/locales/ko.global.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
+</head>
+<body>
+  <header>
+    <h1><a href="#" id="logo">모임 일정 취합</a></h1>
+    <nav id="admin-nav" class="hidden">
+      <span class="admin-badge">관리자</span>
+      <a href="#" id="nav-list">모임 목록</a>
+      <button id="logout-admin" type="button" class="ghost">로그아웃</button>
+    </nav>
+  </header>
+
+  <main>
+    <div id="view-empty" class="view hidden">
+      <div class="card">
+        <h2>비공개 페이지입니다</h2>
+        <p>관리자가 공유한 모임 링크로만 접근할 수 있습니다.<br>링크를 받지 못하셨다면 모임 관리자에게 문의해주세요.</p>
+      </div>
+    </div>
+
+    <div id="view-list" class="view hidden">
+      <div class="list-header">
+        <h2>모임 목록</h2>
+        <button id="create-group-btn" type="button" class="primary">+ 새 모임 만들기</button>
+      </div>
+      <ul id="group-list" class="group-list"></ul>
+      <p id="empty-list" class="muted hidden">아직 만든 모임이 없습니다. 우측 상단 버튼으로 새로 만들어보세요.</p>
+    </div>
+
+    <div id="view-calendar" class="view hidden">
+      <div class="calendar-toolbar">
+        <h2 id="group-name"></h2>
+        <div class="calendar-actions">
+          <button id="back-list-btn" type="button" class="ghost hidden">← 목록으로</button>
+          <button id="copy-link-btn" type="button" class="ghost">공유 링크 복사</button>
+          <button id="delete-group-btn" type="button" class="danger hidden">모임 삭제</button>
+        </div>
+      </div>
+      <div id="hint">
+        캘린더에서 날짜/시간을 드래그하면 일정 등록 창이 열립니다. 등록된 일정을 클릭하면 수정/삭제할 수 있습니다.
+      </div>
+      <div id="calendar"></div>
+    </div>
+  </main>
+
+  <div id="event-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2 id="event-modal-title">일정 등록</h2>
+      <form id="event-form">
+        <label>제목 <input type="text" id="event-title" required maxlength="80"></label>
+        <label>등록자 <input type="text" id="event-author" required maxlength="30"></label>
+        <label>시작 <input type="datetime-local" id="event-start" required></label>
+        <label>종료 <input type="datetime-local" id="event-end" required></label>
+        <label>메모 <textarea id="event-memo" maxlength="500"></textarea></label>
+        <div class="modal-buttons">
+          <button type="button" id="event-delete-btn" class="danger hidden">삭제</button>
+          <button type="button" id="event-cancel-btn" class="cancel">취소</button>
+          <button type="submit" class="primary">저장</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="group-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2>새 모임 만들기</h2>
+      <form id="group-form">
+        <label>모임 이름
+          <input type="text" id="group-name-input" required maxlength="50" placeholder="예: 동아리 MT">
+        </label>
+        <div class="modal-buttons">
+          <button type="button" id="group-cancel-btn" class="cancel">취소</button>
+          <button type="submit" class="primary">만들기</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="firebase-config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

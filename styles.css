@@ -1,0 +1,210 @@
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+  background: #f5f7fa;
+  color: #222;
+}
+
+header {
+  background: #2c3e50;
+  color: white;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+header h1 { margin: 0; font-size: 20px; }
+header h1 a { color: white; text-decoration: none; }
+
+#admin-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+#admin-nav a { color: #ecf0f1; text-decoration: none; }
+#admin-nav a:hover { text-decoration: underline; }
+.admin-badge {
+  background: #e74c3c;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+main {
+  max-width: 1100px;
+  margin: 24px auto;
+  padding: 0 16px 40px;
+}
+
+.view { animation: fadein 0.15s ease; }
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+
+.card {
+  background: white;
+  border-radius: 8px;
+  padding: 32px 28px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  text-align: center;
+}
+.card h2 { margin-top: 0; }
+.card.error { background: #fde2e2; color: #922; }
+
+.muted { color: #888; text-align: center; margin: 32px 0; }
+
+#hint {
+  background: #eaf3fb;
+  color: #34495e;
+  border-left: 4px solid #3498db;
+  padding: 10px 14px;
+  border-radius: 4px;
+  font-size: 13px;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+/* List view */
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.list-header h2 { margin: 0; }
+
+.group-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+.group-list li {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+.group-list li:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.group-list a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  color: inherit;
+  text-decoration: none;
+}
+.group-name { font-weight: 600; font-size: 15px; }
+.group-meta { color: #888; font-size: 13px; }
+
+/* Calendar view */
+.calendar-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.calendar-toolbar h2 { margin: 0; font-size: 18px; }
+.calendar-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+#calendar {
+  background: white;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.fc-event { cursor: pointer; }
+.fc-event-title { font-weight: 500; }
+
+/* Modals */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+.modal.hidden { display: none; }
+
+.modal-content {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.modal-content h2 { margin: 0 0 16px; font-size: 18px; }
+.modal-content form { display: flex; flex-direction: column; gap: 12px; }
+.modal-content label {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  color: #555;
+  gap: 4px;
+}
+.modal-content input,
+.modal-content textarea {
+  padding: 8px 10px;
+  border: 1px solid #ccd;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: inherit;
+}
+.modal-content textarea { min-height: 60px; resize: vertical; }
+
+.modal-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+.modal-buttons button { padding: 8px 16px; }
+
+/* Buttons */
+button {
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 8px 14px;
+  font-family: inherit;
+}
+button.primary { background: #3498db; color: white; }
+button.primary:hover { background: #2980b9; }
+button.danger { background: #e74c3c; color: white; }
+button.danger:hover { background: #c0392b; }
+button.cancel { background: #ecf0f1; color: #333; }
+button.cancel:hover { background: #bdc3c7; }
+button.ghost {
+  background: transparent;
+  color: white;
+  border: 1px solid rgba(255,255,255,0.4);
+}
+button.ghost:hover { background: rgba(255,255,255,0.1); }
+
+.calendar-actions button.ghost {
+  color: #34495e;
+  border: 1px solid #bbb;
+}
+.calendar-actions button.ghost:hover { background: #ecf0f1; }
+
+.hidden { display: none !important; }

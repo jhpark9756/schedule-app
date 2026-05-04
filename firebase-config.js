@@ -10,6 +10,9 @@ window.firebaseConfig = {
   appId: "1:872796379038:web:b5db652f9d5ef81ef7288f",
 };
 
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
 // 관리자 키.
 //   첫 방문 시 https://<배포주소>/?admin=여기에설정한키 로 한 번 접속하면
 //   해당 브라우저는 이후 관리자 모드로 동작합니다 (localStorage 저장).

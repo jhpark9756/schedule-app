@@ -466,6 +466,185 @@ button.ghost:hover { background: rgba(255, 255, 255, 0.28); }
 
 .hidden { display: none !important; }
 
+/* ---------- Admin: memo + AI advice ---------- */
+
+.admin-section {
+  margin-top: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+}
+.admin-section h3 {
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.muted-inline {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: #f3f4f6;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+#memo-input {
+  width: 100%;
+  min-height: 100px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+}
+#memo-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+.admin-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+/* ---------- Event modal: global checkbox ---------- */
+
+.checkbox-row {
+  flex-direction: row !important;
+  align-items: center;
+  gap: 8px !important;
+  background: #fef3c7;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  font-weight: 500 !important;
+  color: #92400e !important;
+  font-size: 13px !important;
+}
+.checkbox-row input[type="checkbox"] {
+  width: auto;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+/* ---------- Global event visual ---------- */
+
+.fc .fc-daygrid-event.event-global {
+  border: 2px dashed rgba(255,255,255,0.6) !important;
+  font-style: italic;
+}
+
+/* ---------- View: 전체 캘린더 ---------- */
+
+.all-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.all-toolbar h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+#all-hint {
+  background: var(--primary-soft);
+  color: #3730a3;
+  border: 1px solid #c7d2fe;
+  border-left: 3px solid var(--primary);
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+.all-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 16px;
+}
+.all-filter {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 14px 18px;
+  box-shadow: var(--shadow-sm);
+  height: fit-content;
+  position: sticky;
+  top: 16px;
+}
+.filter-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+.filter-header span { flex: 1; }
+.link-btn {
+  background: none;
+  border: none;
+  padding: 2px 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--primary);
+  cursor: pointer;
+}
+.link-btn:hover { text-decoration: underline; }
+
+#filter-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+.filter-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: var(--radius-xs);
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+}
+.filter-item:hover { background: #f3f4f6; }
+.filter-item input[type="checkbox"] {
+  margin: 0;
+  cursor: pointer;
+}
+.filter-color {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.filter-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+#all-calendar {
+  background: white;
+  padding: 18px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+}
+
 /* ---------- Mobile ---------- */
 
 @media (max-width: 640px) {
@@ -518,6 +697,12 @@ button.ghost:hover { background: rgba(255, 255, 255, 0.28); }
   }
   .modal-buttons { flex-wrap: wrap; }
   .modal-buttons button { flex: 1; min-width: 80px; padding: 11px 14px; }
+
+  .all-layout { grid-template-columns: 1fr; }
+  .all-filter { position: static; padding: 12px; }
+  #filter-list { max-height: 180px; }
+  .all-toolbar h2 { font-size: 18px; }
+  .admin-section { padding: 14px; }
 }
 
 @media (max-width: 380px) {

@@ -21,6 +21,7 @@
     <nav id="admin-nav" class="hidden">
       <span class="admin-badge">관리자</span>
       <a href="#" id="nav-list">모임 목록</a>
+      <a href="?view=all" id="nav-all">전체 캘린더</a>
       <button id="logout-admin" type="button" class="ghost">로그아웃</button>
     </nav>
   </header>
@@ -59,6 +60,42 @@
         본인이 <b>참석 불가한 날짜</b>를 등록해주세요. 모두 가능하면서 다음날이 휴일/주말인 날짜는 <span class="hint-tag hint-tag-priority">★ 추천</span>으로 표시됩니다. 날짜 클릭 또는 드래그(여러 날)로 등록.
       </div>
       <div id="calendar"></div>
+
+      <section id="admin-memo-section" class="admin-section hidden">
+        <h3>모임 메모 <span class="muted-inline">관리자만 보임</span></h3>
+        <textarea id="memo-input" placeholder="이 모임에 대한 자유 메모. 예: 철수는 시험기간이라 6월 초 안됨, 영희는 매주 화요일 안됨 등"></textarea>
+        <div class="admin-actions">
+          <button id="memo-save-btn" type="button" class="primary">메모 저장</button>
+          <button id="ai-copy-prompt-btn" type="button">AI 조언 프롬프트 복사</button>
+        </div>
+        <p class="field-hint" style="margin-top: 8px;">
+          위 메모와 등록된 불가일정·휴일 정보를 종합한 프롬프트가 클립보드에 복사됩니다. ChatGPT 또는 Claude.ai 무료 플랜에 붙여넣어 모임 추천 날짜 조언을 받아보세요.
+        </p>
+      </section>
+    </div>
+
+    <div id="view-all" class="view hidden">
+      <div class="all-toolbar">
+        <h2>전체 모임 캘린더</h2>
+        <div class="calendar-actions">
+          <button id="register-global-btn" type="button" class="primary">+ 전역 불가일정 등록</button>
+        </div>
+      </div>
+      <div id="all-hint">
+        모든 모임의 등록된 불가 일정을 한 캘린더에서 확인. 좌측 필터로 모임별 토글 가능.<br>
+        <b>전역 불가일정</b>은 관리자가 등록하면 모든 모임 캘린더에 자동 노출됩니다 (예: 회사 전사 일정).
+      </div>
+      <div class="all-layout">
+        <aside class="all-filter">
+          <div class="filter-header">
+            <span>모임 필터</span>
+            <button id="filter-all-btn" type="button" class="link-btn">전체</button>
+            <button id="filter-none-btn" type="button" class="link-btn">없음</button>
+          </div>
+          <div id="filter-list"></div>
+        </aside>
+        <div id="all-calendar"></div>
+      </div>
     </div>
   </main>
 
@@ -72,6 +109,10 @@
         <label>불가 시작일 <input type="date" id="event-start" required></label>
         <label>불가 종료일 <input type="date" id="event-end" required></label>
         <label>메모 <textarea id="event-memo" maxlength="500"></textarea></label>
+        <label id="event-global-row" class="checkbox-row hidden">
+          <input type="checkbox" id="event-global-check">
+          <span>전역 일정으로 등록 (모든 모임 캘린더에 표시)</span>
+        </label>
         <div class="modal-buttons">
           <button type="button" id="event-delete-btn" class="danger hidden">삭제</button>
           <button type="button" id="event-cancel-btn" class="cancel">취소</button>

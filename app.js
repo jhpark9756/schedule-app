@@ -518,10 +518,9 @@
       const startYMD = dateToYMD(ev.start);
       const endYMD = dateToYMD(ev.end);
       const displayEnd = addDays(endYMD, 1);
-      const titlePrefix = isGlobal ? "[전역] " : "";
       calendar.addEvent({
         id,
-        title: `${titlePrefix}${ev.title}${ev.author ? " · " + ev.author : ""}`,
+        title: `${ev.title}${ev.author ? " · " + ev.author : ""}`,
         start: startYMD,
         end: displayEnd,
         allDay: true,
@@ -677,7 +676,7 @@
         if (!ev || !ev.start || !ev.end) return;
         allCalendar.addEvent({
           id: "global:" + eid,
-          title: `[전역] ${ev.title}${ev.author ? " · " + ev.author : ""}`,
+          title: `${ev.title}${ev.author ? " · " + ev.author : ""}`,
           start: dateToYMD(ev.start),
           end: addDays(dateToYMD(ev.end), 1),
           allDay: true,

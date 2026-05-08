@@ -256,7 +256,9 @@
       "calendar",
       (info) => {
         const ev = events[info.event.id];
-        if (ev) openEventModal(ev, info.event.id);
+        if (!ev) return;
+        if (ev._global && !isAdmin) return; // 비관리자는 전역 일정 상세 조회 불가
+        openEventModal(ev, info.event.id);
       },
       (info) => {
         const ymd = dateToYMD(info.date);
@@ -514,19 +516,28 @@
     Object.entries(events).forEach(([id, ev]) => {
       if (!ev || !ev.start || !ev.end) return;
       const isGlobal = !!ev._global;
+      const hideDetails = isGlobal && !isAdmin;
       const color = isGlobal ? "#dc2626" : colorFromString(ev.author || "");
       const startYMD = dateToYMD(ev.start);
       const endYMD = dateToYMD(ev.end);
       const displayEnd = addDays(endYMD, 1);
+      const titleText = hideDetails
+        ? "불가"
+        : `${ev.title}${ev.author ? " · " + ev.author : ""}`;
       calendar.addEvent({
         id,
-        title: `${ev.title}${ev.author ? " · " + ev.author : ""}`,
+        title: titleText,
         start: startYMD,
         end: displayEnd,
         allDay: true,
         backgroundColor: color,
         borderColor: color,
-        extendedProps: { memo: ev.memo, author: ev.author, isGlobal },
+        extendedProps: {
+          memo: hideDetails ? "" : ev.memo,
+          author: hideDetails ? "" : ev.author,
+          isGlobal,
+          hideDetails,
+        },
       });
     });
     refreshDayHighlights();

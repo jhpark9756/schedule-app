@@ -464,7 +464,48 @@ button.ghost:hover { background: rgba(255, 255, 255, 0.28); }
 }
 .calendar-actions button.danger:hover { background: #fef2f2; border-color: var(--danger); }
 
+#reload-btn {
+  font-size: 16px;
+  padding: 6px 10px;
+  line-height: 1;
+}
+
 .hidden { display: none !important; }
+
+.offline-banner {
+  background: #fef2f2;
+  color: #991b1b;
+  padding: 8px 16px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  border-bottom: 1px solid #fecaca;
+}
+
+.loading-row {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 20px;
+  font-size: 13px;
+  list-style: none;
+}
+.error-row {
+  text-align: center;
+  color: #991b1b;
+  background: #fef2f2;
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  list-style: none;
+}
+.error-row button {
+  margin-left: 8px;
+  background: var(--danger);
+  color: white;
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 4px;
+}
 
 /* ---------- Admin: memo + AI advice ---------- */
 

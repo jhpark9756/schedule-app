@@ -16,6 +16,8 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
 </head>
 <body>
+  <div id="offline-banner" class="offline-banner hidden">⚠ 서버 연결이 끊어졌습니다. 자동으로 재연결 시도 중...</div>
+
   <header>
     <h1><a href="#" id="logo">모임 일정 취합</a></h1>
     <nav id="admin-nav" class="hidden">
@@ -51,6 +53,7 @@
         </div>
         <div class="calendar-actions">
           <button id="back-list-btn" type="button" class="hidden">← 목록으로</button>
+          <button id="reload-btn" type="button" title="다시 불러오기">↻</button>
           <button id="copy-link-btn" type="button">공유 링크 복사</button>
           <button id="edit-group-btn" type="button" class="hidden">모임 정보</button>
           <button id="delete-group-btn" type="button" class="danger hidden">모임 삭제</button>

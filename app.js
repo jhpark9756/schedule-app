@@ -71,6 +71,7 @@
 
     initCalendar();
     bindUI();
+    watchConnection();
     route();
 
     window.addEventListener("popstate", route);
@@ -78,6 +79,25 @@
       const opts = getHeaderToolbar();
       if (calendar) calendar.setOption("headerToolbar", opts);
       if (allCalendar) allCalendar.setOption("headerToolbar", opts);
+    });
+  }
+
+  function watchConnection() {
+    const banner = document.getElementById("offline-banner");
+    db.ref(".info/connected").on("value", (snap) => {
+      const isOnline = snap.val() === true;
+      banner.classList.toggle("hidden", isOnline);
+    });
+  }
+
+  function onceWithRetry(ref, attempts) {
+    if (attempts === undefined) attempts = 3;
+    return ref.once("value").catch((err) => {
+      if (attempts <= 1) throw err;
+      const delay = (4 - attempts) * 600;
+      return new Promise((r) => setTimeout(r, delay)).then(() =>
+        onceWithRetry(ref, attempts - 1)
+      );
     });
   }
 
@@ -179,6 +199,9 @@
     document.getElementById("copy-link-btn").addEventListener("click", copyShareLink);
     document.getElementById("back-list-btn").addEventListener("click", () => navigate(location.pathname));
     document.getElementById("delete-group-btn").addEventListener("click", deleteGroup);
+    document.getElementById("reload-btn").addEventListener("click", () => {
+      if (currentGroupId) loadGroup(currentGroupId);
+    });
 
     document.getElementById("event-form").addEventListener("submit", (e) => {
       e.preventDefault();
@@ -302,12 +325,12 @@
   function loadGroupList() {
     const ul = document.getElementById("group-list");
     const empty = document.getElementById("empty-list");
-    ul.innerHTML = "";
+    ul.innerHTML = '<li class="loading-row">불러오는 중...</li>';
     empty.classList.add("hidden");
 
-    db.ref("groupIndex")
-      .once("value")
+    onceWithRetry(db.ref("groupIndex"))
       .then((snap) => {
+        ul.innerHTML = "";
         const data = snap.val() || {};
         const ids = Object.keys(data);
         if (ids.length === 0) {
@@ -337,7 +360,13 @@
           ul.appendChild(li);
         });
       })
-      .catch((err) => alert("목록을 불러오지 못했습니다: " + err.message));
+      .catch((err) => {
+        console.error(err);
+        ul.innerHTML =
+          '<li class="error-row">목록을 불러오지 못했습니다. <button id="retry-list">다시 시도</button></li>';
+        const btn = document.getElementById("retry-list");
+        if (btn) btn.addEventListener("click", loadGroupList);
+      });
   }
 
   // ----- Group modal -----
@@ -442,8 +471,8 @@
     document.getElementById("delete-group-btn").classList.toggle("hidden", !isAdmin);
     document.getElementById("admin-memo-section").classList.toggle("hidden", !isAdmin);
 
-    db.ref("groupIndex/" + groupId)
-      .once("value")
+    document.getElementById("group-name").textContent = "불러오는 중...";
+    onceWithRetry(db.ref("groupIndex/" + groupId))
       .then((snap) => {
         const meta = snap.val() || {};
         currentGroupMeta = meta;
@@ -452,8 +481,9 @@
         document.title = `${name} ${DEFAULT_TITLE}`;
         applyGroupRange(meta);
       })
-      .catch(() => {
-        document.getElementById("group-name").textContent = "(이름 로드 실패)";
+      .catch((err) => {
+        console.error("모임 정보 로드 실패:", err);
+        document.getElementById("group-name").textContent = "(로드 실패 — ↻ 새로고침)";
         applyGroupRange({});
       });
 
@@ -466,7 +496,7 @@
         groupEventsMap = snap.val() || {};
         refreshCalendar();
       },
-      (err) => alert("일정을 불러오지 못했습니다: " + err.message)
+      (err) => console.warn("일정 로드 실패 (재시도 자동):", err)
     );
 
     globalEventsRef = db.ref("globalEvents");
@@ -476,7 +506,7 @@
         globalEventsMap = snap.val() || {};
         refreshCalendar();
       },
-      (err) => console.warn("전역 일정 로드 실패: " + err.message)
+      (err) => console.warn("전역 일정 로드 실패 (재시도 자동):", err)
     );
   }
 
@@ -702,14 +732,14 @@
   // ----- Memo + AI advice -----
 
   function loadMemo(groupId) {
-    db.ref("groupMemos/" + groupId)
-      .once("value")
+    onceWithRetry(db.ref("groupMemos/" + groupId))
       .then((snap) => {
         const data = snap.val();
         currentMemo = (data && data.text) || "";
         document.getElementById("memo-input").value = currentMemo;
       })
-      .catch(() => {
+      .catch((err) => {
+        console.warn("메모 로드 실패:", err);
         currentMemo = "";
       });
   }
